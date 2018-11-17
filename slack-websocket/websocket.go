@@ -114,14 +114,17 @@ func getUserInfo(rtm *slack.RTM, event *slack.MessageEvent) {
 	um := UsersMap{
 		"andrea.martini": users.AndreaHandler{},
 		"giusepping":     users.GiuseppeHandler{},
-		"alessio.melani": users.LomiHandler{},
+		"alessio.melani": users.MeloHandler{},
 		"lomi":           users.LomiHandler{},
 		"alberto":        users.BiniHandler{},
 	}
 
 	if method, present := um[userName]; present {
-		msg := method.Handle(rtm, event)
-		rtm.SendMessage(rtm.NewOutgoingMessage(msg, event.Channel))
+		messages := method.Handle(rtm, event)
+		for _, msg := range messages {
+			rtm.SendMessage(rtm.NewOutgoingMessage(msg, event.Channel))
+			time.Sleep(time.Second * time.Duration(rand.Int31n(3)))
+		}
 	} else {
 		fmt.Printf("User: %s\n Name: %s", userName, userInfo.Profile.DisplayName)
 	}
